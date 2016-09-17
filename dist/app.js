@@ -26179,7 +26179,7 @@
 	                unsortedKennel.push({ kennelId: kennelId, cp: _cp, nickname: _nickname, pokemonId: _pokemonId });
 	            }
 	            var kennel = unsortedKennel.sort(function (a, b) {
-	                return +a.cp < +b.cp;
+	                return b.cp - a.cp;
 	            }).map(function (p) {
 	                return _react2.default.createElement(
 	                    'div',

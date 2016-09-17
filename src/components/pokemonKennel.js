@@ -29,7 +29,7 @@ class PokemonEntryForm extends React.Component {
             const { cp, nickname, pokemonId } = rawKennel[kennelId];
             unsortedKennel.push({ kennelId, cp, nickname, pokemonId });
         }
-        const kennel = unsortedKennel.sort((a, b) => +a.cp < +b.cp)
+        const kennel = unsortedKennel.sort((a, b) => b.cp - a.cp )
                                      .map(p => (<div key={p.kennelId} onClick={this.loadPokemon.bind(this, p.kennelId)}>{p.cp + ': ' + (p.nickname || pokemon[p.pokemonId].name)}</div>));
 
         return (

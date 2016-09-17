@@ -23,12 +23,14 @@ class PokemonEntryForm extends React.Component {
         const strChargeMovePlaceholder = 'Select charge move';
         const enableSubmitButton = (pokemonId && cp > 0);
         const rawKennel = myPokemon.getAll();
-        const kennel = [];
+        const unsortedKennel = [];
 
-        for (var kid in rawKennel) {
-            const p = rawKennel[kid];
-            kennel.push(<div key={kid} onClick={this.loadPokemon.bind(this, kid)}>{p.cp + ': ' + (p.nickname || pokemon[p.pokemonId].name)}</div>);
+        for (var kennelId in rawKennel) {
+            const { cp, nickname, pokemonId } = rawKennel[kennelId];
+            unsortedKennel.push({ kennelId, cp, nickname, pokemonId });
         }
+        const kennel = unsortedKennel.sort((a, b) => +a.cp < +b.cp)
+                                     .map(p => (<div key={p.kennelId} onClick={this.loadPokemon.bind(this, p.kennelId)}>{p.cp + ': ' + (p.nickname || pokemon[p.pokemonId].name)}</div>));
 
         return (
             <div name='form-container' key='form-container'>

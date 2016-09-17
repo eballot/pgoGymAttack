@@ -21459,6 +21459,10 @@
 
 	var _pokemonKennel2 = _interopRequireDefault(_pokemonKennel);
 
+	var _about = __webpack_require__(203);
+
+	var _about2 = _interopRequireDefault(_about);
+
 	var _myPokemonKennel = __webpack_require__(200);
 
 	var _myPokemonKennel2 = _interopRequireDefault(_myPokemonKennel);
@@ -21532,11 +21536,7 @@
 	                    _react2.default.createElement(
 	                        _reactTabs.TabPanel,
 	                        null,
-	                        _react2.default.createElement(
-	                            'h2',
-	                            null,
-	                            'About'
-	                        )
+	                        _react2.default.createElement(_about2.default, null)
 	                    )
 	                )
 	            );
@@ -26150,6 +26150,8 @@
 	    _createClass(PokemonEntryForm, [{
 	        key: 'render',
 	        value: function render() {
+	            var _this2 = this;
+
 	            var _state = this.state;
 	            var uid = _state.uid;
 	            var cp = _state.cp;
@@ -26166,16 +26168,25 @@
 	            var strChargeMovePlaceholder = 'Select charge move';
 	            var enableSubmitButton = pokemonId && cp > 0;
 	            var rawKennel = _myPokemonKennel2.default.getAll();
-	            var kennel = [];
+	            var unsortedKennel = [];
 
-	            for (var kid in rawKennel) {
-	                var p = rawKennel[kid];
-	                kennel.push(_react2.default.createElement(
-	                    'div',
-	                    { key: kid, onClick: this.loadPokemon.bind(this, kid) },
-	                    p.cp + ': ' + (p.nickname || _constants.pokemon[p.pokemonId].name)
-	                ));
+	            for (var kennelId in rawKennel) {
+	                var _rawKennel$kennelId = rawKennel[kennelId];
+	                var _cp = _rawKennel$kennelId.cp;
+	                var _nickname = _rawKennel$kennelId.nickname;
+	                var _pokemonId = _rawKennel$kennelId.pokemonId;
+
+	                unsortedKennel.push({ kennelId: kennelId, cp: _cp, nickname: _nickname, pokemonId: _pokemonId });
 	            }
+	            var kennel = unsortedKennel.sort(function (a, b) {
+	                return +a.cp < +b.cp;
+	            }).map(function (p) {
+	                return _react2.default.createElement(
+	                    'div',
+	                    { key: p.kennelId, onClick: _this2.loadPokemon.bind(_this2, p.kennelId) },
+	                    p.cp + ': ' + (p.nickname || _constants.pokemon[p.pokemonId].name)
+	                );
+	            });
 
 	            return _react2.default.createElement(
 	                'div',
@@ -26395,6 +26406,59 @@
 
 	exports.default = PokemonKennel;
 	;
+
+/***/ },
+/* 203 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var AboutCalculator = function (_React$Component) {
+	    _inherits(AboutCalculator, _React$Component);
+
+	    function AboutCalculator() {
+	        _classCallCheck(this, AboutCalculator);
+
+	        return _possibleConstructorReturn(this, (AboutCalculator.__proto__ || Object.getPrototypeOf(AboutCalculator)).apply(this, arguments));
+	    }
+
+	    _createClass(AboutCalculator, [{
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                null,
+	                'This tool calculates which of your pokemon are best to pit against the pokemon defending a gym.',
+	                _react2.default.createElement('p', null),
+	                'To use this calculator, add your strongest pokemon to the Kennel. Then go to the Battle tab and enter the defenders. For each defender, the five best pokemon from your kennel are listed. The calculation is based on an estimate of how much damage your pokemon will inflict on and will suffer from the defender. It includes the bonuses from attack type and pokemon type.',
+	                _react2.default.createElement('p', null),
+	                'Your pokemon\'s attack is green if it is super effective against the defender, and red if ineffective.'
+	            );
+	        }
+	    }]);
+
+	    return AboutCalculator;
+	}(_react2.default.Component);
+
+	exports.default = AboutCalculator;
 
 /***/ }
 /******/ ]);

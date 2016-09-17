@@ -4,6 +4,7 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
 import GymAttackForm from './gymAttack';
 import PokemonKennel from './pokemonKennel'
+import About from './about';
 import myPokemon from '../data/myPokemonKennel';
 
 
@@ -28,17 +29,14 @@ export default class MainTabs extends React.Component {
                         <Tab>Kennel</Tab>
                         <Tab>About</Tab>
                     </TabList>
-
                     <TabPanel>
                         <GymAttackForm />
                     </TabPanel>
-
                     <TabPanel>
                         <PokemonKennel />
                     </TabPanel>
-
                     <TabPanel>
-                        <h2>About</h2>
+                        <About />
                     </TabPanel>
                 </Tabs>
             </div>

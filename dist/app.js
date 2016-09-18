@@ -25986,7 +25986,7 @@
 
 	var _constants = __webpack_require__(198);
 
-	function calculateQuickScore(attackingQuicks, defenderTypes) {
+	function calculateQuickScore(attackingQuicks, defenderTypes, attackDefenseRatio) {
 	    var quickMoveSeconds = 60;
 	    var quickResult = {
 	        avg: 0,
@@ -25999,7 +25999,7 @@
 	        var type = _quickMoves$move.type;
 	        var dps = _quickMoves$move.dps;
 
-	        var baseDamage = dps * quickMoveSeconds;
+	        var baseDamage = dps * quickMoveSeconds * attackDefenseRatio;
 	        var moveEffectiveness = _constants.typeEffectiveness[type];
 	        var effectiveness = defenderTypes.reduce(function (prevEffectiveness, type) {
 	            return prevEffectiveness * moveEffectiveness[type];
@@ -26024,7 +26024,7 @@
 	    return quickResult;
 	}
 
-	function calculateChargeScore(attackingCharge, defenderTypes) {
+	function calculateChargeScore(attackingCharge, defenderTypes, attackDefenseRatio) {
 	    var chargeMovePercent = 300;
 	    var chargeResult = {
 	        avg: 0,
@@ -26039,7 +26039,7 @@
 	        var pw = _chargeMoves$move.pw;
 	        var cost = _chargeMoves$move.cost;
 
-	        var baseDamage = pw * (chargeMovePercent / cost);
+	        var baseDamage = pw * attackDefenseRatio * (chargeMovePercent / cost);
 	        var moveEffectiveness = _constants.typeEffectiveness[type];
 	        var effectiveness = defenderTypes.reduce(function (prevEffectiveness, type) {
 	            return prevEffectiveness * moveEffectiveness[type];
@@ -26085,8 +26085,15 @@
 	    var attackingQuick = attacker.quickMove ? [attacker.quickMove] : attackingPokemon.quick;
 	    var attackingCharge = attacker.chargeMove ? [attacker.chargeMove] : attackingPokemon.charge;
 
-	    var quick = calculateQuickScore(attackingQuick, defenderTypes);
-	    var charge = calculateChargeScore(attackingCharge, defenderTypes);
+	    // The full equation for ratio should include the pokemon's level and IV for attack and def
+	    // see https://www.reddit.com/r/TheSilphRoad/comments/4wzll7/testing_gym_combat_misconceptions
+	    // To simplify the equations (and data entry), assume CP_modifiers are roughly equal so they
+	    // cancel each other. Along with CP_modifier, constants can also be ignored.
+	    // attack = (base_attack + attack_IV) * CP_modifier
+	    // defense = (base_defense + defense_IV) * CP_modifier
+	    var attackDefenseRatio = attackingPokemon.atk / defendingPokemon.def;
+	    var quick = calculateQuickScore(attackingQuick, defenderTypes, attackDefenseRatio);
+	    var charge = calculateChargeScore(attackingCharge, defenderTypes, attackDefenseRatio);
 
 	    return {
 	        score: quick.max + charge.max,

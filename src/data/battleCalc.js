@@ -1,6 +1,6 @@
 import { typeEffectiveness, pokemon, quickMoves, chargeMoves } from './constants';
 
-function calculateQuickScore(attackingQuicks, defenderTypes) {
+function calculateQuickScore(attackingQuicks, defenderTypes, attackDefenseRatio) {
     const quickMoveSeconds = 60;
     const quickResult = {
         avg: 0,
@@ -10,7 +10,7 @@ function calculateQuickScore(attackingQuicks, defenderTypes) {
 
     attackingQuicks.forEach(function(move) {
         const { type, dps } = quickMoves[move];
-        const baseDamage = dps * quickMoveSeconds;
+        const baseDamage = dps * quickMoveSeconds * attackDefenseRatio;
         const moveEffectiveness = typeEffectiveness[type];
         const effectiveness = defenderTypes.reduce(function(prevEffectiveness, type) {
             return prevEffectiveness * moveEffectiveness[type];
@@ -33,7 +33,7 @@ function calculateQuickScore(attackingQuicks, defenderTypes) {
     return quickResult;
 }
 
-function calculateChargeScore(attackingCharge, defenderTypes) {
+function calculateChargeScore(attackingCharge, defenderTypes, attackDefenseRatio) {
     const chargeMovePercent = 300;
     const chargeResult = {
         avg: 0,
@@ -44,7 +44,7 @@ function calculateChargeScore(attackingCharge, defenderTypes) {
     attackingCharge.forEach(function(move) {
         //TODO: take crit into account
         const { type, pw, cost } = chargeMoves[move];
-        const baseDamage = pw * (chargeMovePercent / cost);
+        const baseDamage = pw * attackDefenseRatio * (chargeMovePercent / cost);
         const moveEffectiveness = typeEffectiveness[type];
         const effectiveness = defenderTypes.reduce(function(prevEffectiveness, type) {
             return prevEffectiveness * moveEffectiveness[type];
@@ -89,8 +89,15 @@ export default function battleCalc(attacker, defender) {
     const attackingQuick = attacker.quickMove ? [attacker.quickMove] : attackingPokemon.quick;
     const attackingCharge = attacker.chargeMove ? [attacker.chargeMove] : attackingPokemon.charge;
 
-    const quick = calculateQuickScore(attackingQuick, defenderTypes);
-    const charge = calculateChargeScore(attackingCharge, defenderTypes);
+    // The full equation for ratio should include the pokemon's level and IV for attack and def
+    // see https://www.reddit.com/r/TheSilphRoad/comments/4wzll7/testing_gym_combat_misconceptions
+    // To simplify the equations (and data entry), assume CP_modifiers are roughly equal so they
+    // cancel each other. Along with CP_modifier, constants can also be ignored.
+    // attack = (base_attack + attack_IV) * CP_modifier
+    // defense = (base_defense + defense_IV) * CP_modifier
+    const attackDefenseRatio = attackingPokemon.atk / defendingPokemon.def;
+    const quick = calculateQuickScore(attackingQuick, defenderTypes, attackDefenseRatio);
+    const charge = calculateChargeScore(attackingCharge, defenderTypes, attackDefenseRatio);
 
     return {
         score: quick.max + charge.max,

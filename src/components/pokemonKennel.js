@@ -83,12 +83,12 @@ class PokemonEntryForm extends React.Component {
         const name = p.nickname || pokemonStats.name;
         const quickAttack = quickMoves[p.quickMove];
         const chargeAttack = chargeMoves[p.chargeMove];
-        const quickDps = parseFloat(pokemonStats.atk * quickAttack.dps / 100).toFixed(1);
-        const chargeDps = parseFloat(pokemonStats.atk * chargeAttack.dps / 100).toFixed(1);
+        const quickDps = Math.round(pokemonStats.atk * quickAttack.dps / 10);
+        const chargeDps = Math.round(pokemonStats.atk * chargeAttack.dps / 10);
         return (
             <div key={p.kennelId} onClick={this.loadPokemon.bind(this, p.kennelId)}>
                 <span>{p.cp + ': ' + name}</span>
-                <small>{' - ' + quickAttack.name + '(' + quickDps + ') / ' + chargeAttack.name + '(' + chargeDps + ')'}</small>
+                <small>{' - ' + quickAttack.name + ':' + quickDps + ' / ' + chargeAttack.name + ':' + chargeDps}</small>
             </div>
         );
     };

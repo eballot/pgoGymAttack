@@ -26278,8 +26278,8 @@
 	            var name = p.nickname || pokemonStats.name;
 	            var quickAttack = _constants.quickMoves[p.quickMove];
 	            var chargeAttack = _constants.chargeMoves[p.chargeMove];
-	            var quickDps = parseFloat(pokemonStats.atk * quickAttack.dps / 100).toFixed(1);
-	            var chargeDps = parseFloat(pokemonStats.atk * chargeAttack.dps / 100).toFixed(1);
+	            var quickDps = Math.round(pokemonStats.atk * quickAttack.dps / 10);
+	            var chargeDps = Math.round(pokemonStats.atk * chargeAttack.dps / 10);
 	            return _react2.default.createElement(
 	                'div',
 	                { key: p.kennelId, onClick: this.loadPokemon.bind(this, p.kennelId) },
@@ -26291,7 +26291,7 @@
 	                _react2.default.createElement(
 	                    'small',
 	                    null,
-	                    ' - ' + quickAttack.name + '(' + quickDps + ') / ' + chargeAttack.name + '(' + chargeDps + ')'
+	                    ' - ' + quickAttack.name + ':' + quickDps + ' / ' + chargeAttack.name + ':' + chargeDps
 	                )
 	            );
 	        }

@@ -26,11 +26,11 @@ class PokemonEntryForm extends React.Component {
         const unsortedKennel = [];
 
         for (var kennelId in rawKennel) {
-            const { cp, nickname, pokemonId } = rawKennel[kennelId];
-            unsortedKennel.push({ kennelId, cp, nickname, pokemonId });
+            const { cp, nickname, pokemonId, quickMove, chargeMove } = rawKennel[kennelId];
+            unsortedKennel.push({ kennelId, cp, nickname, pokemonId, quickMove, chargeMove });
         }
         const kennel = unsortedKennel.sort((a, b) => b.cp - a.cp )
-                                     .map(p => (<div key={p.kennelId} onClick={this.loadPokemon.bind(this, p.kennelId)}>{p.cp + ': ' + (p.nickname || pokemon[p.pokemonId].name)}</div>));
+                                     .map(p => this.formatKennelEntry(p))
 
         return (
             <div name='form-container' key='form-container'>
@@ -66,10 +66,29 @@ class PokemonEntryForm extends React.Component {
 
                 <div key='kennel-list'>
                     <h3 key='kennel-title'>Your Poke Kennel</h3>
-                    <div key='kennel-scroller'>
-                        {kennel}
+                    {kennel}
+                    <hr />
+                    <div key='kennel-explanation'>
+                        Your pokemon are listed from highest to lowest CP. The number following each move
+                        represents the relative power of that move. It is based on the move's DPS and your
+                        pokemon's Attack stat.
                     </div>
                 </div>
+            </div>
+        );
+    };
+
+    formatKennelEntry(p) {
+        const pokemonStats = pokemon[p.pokemonId];
+        const name = p.nickname || pokemonStats.name;
+        const quickAttack = quickMoves[p.quickMove];
+        const chargeAttack = chargeMoves[p.chargeMove];
+        const quickDps = parseFloat(pokemonStats.atk * quickAttack.dps / 100).toFixed(1);
+        const chargeDps = parseFloat(pokemonStats.atk * chargeAttack.dps / 100).toFixed(1);
+        return (
+            <div key={p.kennelId} onClick={this.loadPokemon.bind(this, p.kennelId)}>
+                <span>{p.cp + ': ' + name}</span>
+                <small>{' - ' + quickAttack.name + '(' + quickDps + ') / ' + chargeAttack.name + '(' + chargeDps + ')'}</small>
             </div>
         );
     };

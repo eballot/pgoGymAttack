@@ -26182,17 +26182,15 @@
 	                var _cp = _rawKennel$kennelId.cp;
 	                var _nickname = _rawKennel$kennelId.nickname;
 	                var _pokemonId = _rawKennel$kennelId.pokemonId;
+	                var _quickMove = _rawKennel$kennelId.quickMove;
+	                var _chargeMove = _rawKennel$kennelId.chargeMove;
 
-	                unsortedKennel.push({ kennelId: kennelId, cp: _cp, nickname: _nickname, pokemonId: _pokemonId });
+	                unsortedKennel.push({ kennelId: kennelId, cp: _cp, nickname: _nickname, pokemonId: _pokemonId, quickMove: _quickMove, chargeMove: _chargeMove });
 	            }
 	            var kennel = unsortedKennel.sort(function (a, b) {
 	                return b.cp - a.cp;
 	            }).map(function (p) {
-	                return _react2.default.createElement(
-	                    'div',
-	                    { key: p.kennelId, onClick: _this2.loadPokemon.bind(_this2, p.kennelId) },
-	                    p.cp + ': ' + (p.nickname || _constants.pokemon[p.pokemonId].name)
-	                );
+	                return _this2.formatKennelEntry(p);
 	            });
 
 	            return _react2.default.createElement(
@@ -26263,11 +26261,37 @@
 	                        { key: 'kennel-title' },
 	                        'Your Poke Kennel'
 	                    ),
+	                    kennel,
+	                    _react2.default.createElement('hr', null),
 	                    _react2.default.createElement(
 	                        'div',
-	                        { key: 'kennel-scroller' },
-	                        kennel
+	                        { key: 'kennel-explanation' },
+	                        'Your pokemon are listed from highest to lowest CP. The number following each move represents the relative power of that move. It is based on the move\'s DPS and your pokemon\'s Attack stat.'
 	                    )
+	                )
+	            );
+	        }
+	    }, {
+	        key: 'formatKennelEntry',
+	        value: function formatKennelEntry(p) {
+	            var pokemonStats = _constants.pokemon[p.pokemonId];
+	            var name = p.nickname || pokemonStats.name;
+	            var quickAttack = _constants.quickMoves[p.quickMove];
+	            var chargeAttack = _constants.chargeMoves[p.chargeMove];
+	            var quickDps = parseFloat(pokemonStats.atk * quickAttack.dps / 100).toFixed(1);
+	            var chargeDps = parseFloat(pokemonStats.atk * chargeAttack.dps / 100).toFixed(1);
+	            return _react2.default.createElement(
+	                'div',
+	                { key: p.kennelId, onClick: this.loadPokemon.bind(this, p.kennelId) },
+	                _react2.default.createElement(
+	                    'span',
+	                    null,
+	                    p.cp + ': ' + name
+	                ),
+	                _react2.default.createElement(
+	                    'small',
+	                    null,
+	                    ' - ' + quickAttack.name + '(' + quickDps + ') / ' + chargeAttack.name + '(' + chargeDps + ')'
 	                )
 	            );
 	        }

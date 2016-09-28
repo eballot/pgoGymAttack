@@ -25803,6 +25803,111 @@
 	//    });
 	//}
 
+	var stardustCostToDamageMultiplier = exports.stardustCostToDamageMultiplier = {
+	    200: 0.094, //1
+	    400: 0.21573247, //3
+	    600: 0.29024988, //5
+	    800: 0.34921268, //7
+	    1000: 0.39956728, //9
+	    1300: 0.44310755, //11
+	    1600: 0.48168495, //13
+	    1900: 0.51739395, //15
+	    2200: 0.55079269, //17
+	    2500: 0.58227891, //19
+	    3000: 0.61215729, //21
+	    3500: 0.64065295, //23
+	    4000: 0.667934, //25
+	    4500: 0.69414365, //27
+	    5000: 0.71939909, //29
+	    6000: 0.73776948, //31
+	    7000: 0.74976104, //33
+	    8000: 0.76156384, //35
+	    9000: 0.7731865, //37
+	    10000: 0.78463697 //39
+	};
+
+	var cpLevelMultiplier = exports.cpLevelMultiplier = {
+	    1: 0.094,
+	    1.5: 0.135137432,
+	    2: 0.16639787,
+	    2.5: 0.192650919,
+	    3: 0.21573247,
+	    3.5: 0.236572661,
+	    4: 0.25572005,
+	    4.5: 0.273530381,
+	    5: 0.29024988,
+	    5.5: 0.306057377,
+	    6: 0.3210876,
+	    6.5: 0.335445036,
+	    7: 0.34921268,
+	    7.5: 0.362457751,
+	    8: 0.37523559,
+	    8.5: 0.387592406,
+	    9: 0.39956728,
+	    9.5: 0.411193551,
+	    10: 0.42250001,
+	    10.5: 0.432926419,
+	    11: 0.44310755,
+	    11.5: 0.4530599578,
+	    12: 0.46279839,
+	    12.5: 0.472336083,
+	    13: 0.48168495,
+	    13.5: 0.4908558,
+	    14: 0.49985844,
+	    14.5: 0.508701765,
+	    15: 0.51739395,
+	    15.5: 0.525942511,
+	    16: 0.53435433,
+	    16.5: 0.542635767,
+	    17: 0.55079269,
+	    17.5: 0.558830576, //cost=2200
+	    18: 0.56675452,
+	    18.5: 0.574569153,
+	    19: 0.58227891,
+	    19.5: 0.589887917,
+	    20: 0.59740001, //cost=2500
+	    20.5: 0.604818814,
+	    21: 0.61215729,
+	    21.5: 0.619399365,
+	    22: 0.62656713, //cost=3000
+	    22.5: 0.633644533,
+	    23: 0.64065295,
+	    23.5: 0.647576426,
+	    24: 0.65443563,
+	    24.5: 0.661214806,
+	    25: 0.667934,
+	    25.5: 0.674577537,
+	    26: 0.68116492,
+	    26.5: 0.687680648,
+	    27: 0.69414365,
+	    27.5: 0.700538673,
+	    28: 0.70688421,
+	    28.5: 0.713164996,
+	    29: 0.71939909,
+	    29.5: 0.725571552,
+	    30: 0.7317,
+	    30.5: 0.734741009,
+	    31: 0.73776948,
+	    31.5: 0.740785574,
+	    32: 0.74378943,
+	    32.5: 0.746781211,
+	    33: 0.74976104,
+	    33.5: 0.752729087,
+	    34: 0.75568551,
+	    34.5: 0.758630378,
+	    35: 0.76156384,
+	    35.5: 0.764486065,
+	    36: 0.76739717,
+	    36.5: 0.770297266,
+	    37: 0.7731865,
+	    37.5: 0.776064962,
+	    38: 0.77893275,
+	    38.5: 0.781790055,
+	    39: 0.78463697,
+	    39.5: 0.787473578,
+	    40: 0.79030001
+	};
+
 /***/ },
 /* 199 */
 /***/ function(module, exports, __webpack_require__) {
@@ -25919,6 +26024,7 @@
 	 *     uid: {
 	 *         pokemonId: the 3-digit key into the pokemon object
 	 *         cp: its combat power
+	 *         dust: the stardust cost to power up the pokemon
 	 *         nickname: option text to display instead of the pokemon type
 	 *         quickMove: the key into the quickMoves object
 	 *         chargeMove: the key into the chargeMoves object
@@ -25937,6 +26043,7 @@
 	        var uid = _ref.uid;
 	        var pokemonId = _ref.pokemonId;
 	        var cp = _ref.cp;
+	        var dust = _ref.dust;
 	        var nickname = _ref.nickname;
 	        var quickMove = _ref.quickMove;
 	        var chargeMove = _ref.chargeMove;
@@ -25949,6 +26056,7 @@
 	            list[uid] = {
 	                pokemonId: pokemonId,
 	                cp: cp,
+	                dust: dust,
 	                nickname: nickname,
 	                quickMove: quickMove,
 	                chargeMove: chargeMove
@@ -26084,6 +26192,8 @@
 	    var attackingPokemon = _constants.pokemon[attacker.pokemonId];
 	    var attackingQuick = attacker.quickMove ? [attacker.quickMove] : attackingPokemon.quick;
 	    var attackingCharge = attacker.chargeMove ? [attacker.chargeMove] : attackingPokemon.charge;
+	    var defaultDustCost = 4500; // Assume a fairly high level defender
+	    var dmgMultiplier = _constants.stardustCostToDamageMultiplier[attacker.dust || defaultDustCost];
 
 	    // The full equation for ratio should include the pokemon's level and IV for attack and def
 	    // see https://www.reddit.com/r/TheSilphRoad/comments/4wzll7/testing_gym_combat_misconceptions
@@ -26091,7 +26201,7 @@
 	    // cancel each other. Along with CP_modifier, constants can also be ignored.
 	    // attack = (base_attack + attack_IV) * CP_modifier
 	    // defense = (base_defense + defense_IV) * CP_modifier
-	    var attackDefenseRatio = attackingPokemon.atk / defendingPokemon.def;
+	    var attackDefenseRatio = dmgMultiplier * attackingPokemon.atk / defendingPokemon.def;
 	    var quick = calculateQuickScore(attackingQuick, defenderTypes, attackDefenseRatio);
 	    var charge = calculateChargeScore(attackingCharge, defenderTypes, attackDefenseRatio);
 
@@ -26142,6 +26252,8 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	var stardustOptions = [{ label: '200', value: '200' }, { label: '400', value: '400' }, { label: '600', value: '600' }, { label: '800', value: '800' }, { label: '1000', value: '1000' }, { label: '1300', value: '1300' }, { label: '1600', value: '1600' }, { label: '1900', value: '1900' }, { label: '2200', value: '2200' }, { label: '2500', value: '2500' }, { label: '3000', value: '3000' }, { label: '3500', value: '3500' }, { label: '4000', value: '4000' }, { label: '4500', value: '4500' }, { label: '5000', value: '5000' }, { label: '6000', value: '6000' }, { label: '7000', value: '7000' }, { label: '8000', value: '8000' }, { label: '9000', value: '9000' }, { label: '10000', value: '10000' }];
+
 	var PokemonEntryForm = function (_React$Component) {
 	    _inherits(PokemonEntryForm, _React$Component);
 
@@ -26162,6 +26274,7 @@
 	            var _state = this.state;
 	            var uid = _state.uid;
 	            var cp = _state.cp;
+	            var dust = _state.dust;
 	            var pokemonId = _state.pokemonId;
 	            var nickname = _state.nickname;
 	            var quickMove = _state.quickMove;
@@ -26171,6 +26284,7 @@
 
 	            var instructions = 'Add a pokemon that you would use to attack gyms';
 	            var strPokemonPlaceholder = 'Select Pokemon from list';
+	            var strStardustPlaceholder = 'Select the stardust cost to power up';
 	            var strQuickMovePlaceholder = 'Select quick move';
 	            var strChargeMovePlaceholder = 'Select charge move';
 	            var enableSubmitButton = pokemonId && cp > 0;
@@ -26180,12 +26294,13 @@
 	            for (var kennelId in rawKennel) {
 	                var _rawKennel$kennelId = rawKennel[kennelId];
 	                var _cp = _rawKennel$kennelId.cp;
+	                var _dust = _rawKennel$kennelId.dust;
 	                var _nickname = _rawKennel$kennelId.nickname;
 	                var _pokemonId = _rawKennel$kennelId.pokemonId;
 	                var _quickMove = _rawKennel$kennelId.quickMove;
 	                var _chargeMove = _rawKennel$kennelId.chargeMove;
 
-	                unsortedKennel.push({ kennelId: kennelId, cp: _cp, nickname: _nickname, pokemonId: _pokemonId, quickMove: _quickMove, chargeMove: _chargeMove });
+	                unsortedKennel.push({ kennelId: kennelId, cp: _cp, dust: _dust, nickname: _nickname, pokemonId: _pokemonId, quickMove: _quickMove, chargeMove: _chargeMove });
 	            }
 	            var kennel = unsortedKennel.sort(function (a, b) {
 	                return b.cp - a.cp;
@@ -26209,15 +26324,6 @@
 	                _react2.default.createElement(
 	                    'label',
 	                    null,
-	                    'CP: '
-	                ),
-	                ' ',
-	                _react2.default.createElement('input', { key: 'cp-input', type: 'number', value: cp, onChange: this.handleCpChanged.bind(this) }),
-	                ' ',
-	                _react2.default.createElement('br', null),
-	                _react2.default.createElement(
-	                    'label',
-	                    null,
 	                    'Name: '
 	                ),
 	                ' ',
@@ -26228,6 +26334,21 @@
 	                    ' (optional)'
 	                ),
 	                _react2.default.createElement('br', null),
+	                _react2.default.createElement(
+	                    'label',
+	                    null,
+	                    'CP: '
+	                ),
+	                ' ',
+	                _react2.default.createElement('input', { key: 'cp-input', type: 'number', value: cp, onChange: this.handleCpChanged.bind(this) }),
+	                ' ',
+	                _react2.default.createElement('br', null),
+	                _react2.default.createElement(_reactSelect2.default, { key: 'dust-selector',
+	                    value: dust,
+	                    options: stardustOptions,
+	                    onChange: this.handleStardustChanged.bind(this),
+	                    placeholder: strStardustPlaceholder
+	                }),
 	                _react2.default.createElement(_reactSelect2.default, { key: 'quick-move-selector',
 	                    value: quickMove,
 	                    options: possibleQuickMoves,
@@ -26266,7 +26387,7 @@
 	                    _react2.default.createElement(
 	                        'div',
 	                        { key: 'kennel-explanation' },
-	                        'Your pokemon are listed from highest to lowest CP. The number following each move represents the relative power of that move. It is based on the move\'s DPS and your pokemon\'s Attack stat.'
+	                        'Your pokemon are listed from highest to lowest CP. The number following each move represents the relative power of that move. It is based on the move\'s DPS and your pokemon\'s Attack stat and level (estimated from the stardust cost).'
 	                    )
 	                )
 	            );
@@ -26278,8 +26399,9 @@
 	            var name = p.nickname || pokemonStats.name;
 	            var quickAttack = _constants.quickMoves[p.quickMove];
 	            var chargeAttack = _constants.chargeMoves[p.chargeMove];
-	            var quickDps = Math.round(pokemonStats.atk * quickAttack.dps / 10);
-	            var chargeDps = Math.round(pokemonStats.atk * chargeAttack.dps / 10);
+	            var dmgMultiplier = _constants.stardustCostToDamageMultiplier[p.dust || 2500];
+	            var quickDps = Math.round(dmgMultiplier * pokemonStats.atk * quickAttack.dps / 10);
+	            var chargeDps = Math.round(dmgMultiplier * pokemonStats.atk * chargeAttack.dps / 10);
 	            return _react2.default.createElement(
 	                'div',
 	                { key: p.kennelId, onClick: this.loadPokemon.bind(this, p.kennelId) },
@@ -26305,6 +26427,7 @@
 	                uid: '',
 	                pokemonId: defaultPokemonId,
 	                cp: '',
+	                dust: '',
 	                nickname: '',
 	                quickMove: moves.quickMove,
 	                chargeMove: moves.chargeMove,
@@ -26317,6 +26440,13 @@
 	        value: function handleCpChanged(event) {
 	            this.setState({
 	                cp: event.target.value
+	            });
+	        }
+	    }, {
+	        key: 'handleStardustChanged',
+	        value: function handleStardustChanged(dust) {
+	            this.setState({
+	                dust: dust.value
 	            });
 	        }
 	    }, {
@@ -26372,6 +26502,7 @@
 	            var p = _myPokemonKennel2.default.get(uid);
 	            var pokemonId = p.pokemonId;
 	            var cp = p.cp;
+	            var dust = p.dust;
 	            var nickname = p.nickname;
 	            var quickMove = p.quickMove;
 	            var chargeMove = p.chargeMove;
@@ -26382,6 +26513,7 @@
 	                uid: uid,
 	                pokemonId: pokemonId,
 	                cp: cp,
+	                dust: dust,
 	                nickname: nickname,
 	                quickMove: quickMove,
 	                chargeMove: chargeMove,

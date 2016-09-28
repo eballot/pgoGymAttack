@@ -8,6 +8,7 @@ const dbkey = 'myPokemon';
  *     uid: {
  *         pokemonId: the 3-digit key into the pokemon object
  *         cp: its combat power
+ *         dust: the stardust cost to power up the pokemon
  *         nickname: option text to display instead of the pokemon type
  *         quickMove: the key into the quickMoves object
  *         chargeMove: the key into the chargeMoves object
@@ -21,7 +22,7 @@ const MyPokemon = {
 
     // Add or update a pokemon. If uid is specified, the existing pokemon data
     // for that uid will be updated.
-    add({ uid, pokemonId, cp, nickname, quickMove, chargeMove }) {
+    add({ uid, pokemonId, cp, dust, nickname, quickMove, chargeMove }) {
         var success = false;
         // Validity checks
         if (cp > 0 && pokemon[pokemonId] && quickMoves[quickMove] && chargeMoves[chargeMove]) {
@@ -30,6 +31,7 @@ const MyPokemon = {
             list[uid] = {
                 pokemonId,
                 cp,
+                dust,
                 nickname,
                 quickMove,
                 chargeMove

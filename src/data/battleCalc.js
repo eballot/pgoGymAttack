@@ -1,4 +1,10 @@
-import { typeEffectiveness, pokemon, quickMoves, chargeMoves } from './constants';
+import {
+    typeEffectiveness,
+    pokemon,
+    quickMoves,
+    chargeMoves,
+    stardustCostToDamageMultiplier
+} from './constants';
 
 function calculateQuickScore(attackingQuicks, defenderTypes, attackDefenseRatio) {
     const quickMoveSeconds = 60;
@@ -88,6 +94,9 @@ export default function battleCalc(attacker, defender) {
     const attackingPokemon = pokemon[attacker.pokemonId];
     const attackingQuick = attacker.quickMove ? [attacker.quickMove] : attackingPokemon.quick;
     const attackingCharge = attacker.chargeMove ? [attacker.chargeMove] : attackingPokemon.charge;
+    const defaultDustCost = 4500; // Assume a fairly high level defender
+    const dmgMultiplier = stardustCostToDamageMultiplier[attacker.dust || defaultDustCost];
+
 
     // The full equation for ratio should include the pokemon's level and IV for attack and def
     // see https://www.reddit.com/r/TheSilphRoad/comments/4wzll7/testing_gym_combat_misconceptions
@@ -95,7 +104,7 @@ export default function battleCalc(attacker, defender) {
     // cancel each other. Along with CP_modifier, constants can also be ignored.
     // attack = (base_attack + attack_IV) * CP_modifier
     // defense = (base_defense + defense_IV) * CP_modifier
-    const attackDefenseRatio = attackingPokemon.atk / defendingPokemon.def;
+    const attackDefenseRatio = dmgMultiplier * attackingPokemon.atk / defendingPokemon.def;
     const quick = calculateQuickScore(attackingQuick, defenderTypes, attackDefenseRatio);
     const charge = calculateChargeScore(attackingCharge, defenderTypes, attackDefenseRatio);
 
